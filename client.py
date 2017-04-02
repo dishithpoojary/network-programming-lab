@@ -12,8 +12,19 @@ inp = s.recv(1024)
 
 print inp
 
-arr = list(map(int,inp.strip().split(" ")))
-num,speed = arr
+arr = list(map(str,inp.strip().split(" ")))
+
+protocol = arr[0]
+
+print protocol
+if protocol == "tcp":
+    print "Tcp connection establishment request detected...."
+    print "sending an SYN ack..."
+    s.send("SYN ack")
+
+num,speed = 10,2
+
+
 
 import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (800,100)
@@ -23,8 +34,10 @@ pygame.init()
 white = (255,255,255)
 display_width = 500
 display_height  = 500
-x,y = -100,200
+x,y = -150,250
+cr = 10
 counter = 0
+end_packet_trasfer = False
 clock = pygame.time.Clock()
 
 ##pygame.time.delay(500/(speed*30)*1000)
@@ -43,11 +56,22 @@ while gameOver == True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameOver = False
-
+    
     if counter>500/speed:      
         x+=speed
-        for _ in range(num):
-            pygame.draw.rect(gameDisplay,(0,255,0),[x+_*20,y,10,10])
+
+        if x+num*20>=350:
+            num-=1
+            
+        if not end_packet_trasfer:
+            for _ in range(num):
+                pygame.draw.rect(gameDisplay,(0,255,0),[x+_*20,y,5,5])
+
+    pygame.draw.circle(gameDisplay,(255,200,150),(350,250),cr,0)
+
+    cr+=1
+    if cr >= 30:
+        cr=10
             
     counter+=1
     clock.tick(30)
